@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 from datetime import datetime
+from collections import defaultdict
+
+#combine trial transcript data from folders inside the 'video_data' folder
 
 root = 'video_data'
 
@@ -15,8 +18,10 @@ for item in os.listdir(root):
             dfs.append(df)
 print('# of trial transcript files combined:', len(dfs))
 df = pd.concat(dfs)
+df['r_id'] = df['run_id'].astype(str)
+df = df.drop('run_id', axis='columns')
+transcripts_data = df.set_index('r_id')
+transcripts_data.index.names = ['run_id']
 date = str(datetime.now().strftime('%Y-%m-%d'))
 filename = 'combined_transcripts_'+date+'.csv'
-df.to_csv(filename)
-
-
+transcripts_data.to_csv(filename)
